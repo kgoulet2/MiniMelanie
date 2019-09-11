@@ -1,0 +1,101 @@
+{% include 'subscription-cart-footer' %}
+<section class="cart">
+  {% if cart.item_count == 0 %}
+	<div class="empty">
+      <h2 class="theme">{{ 'cart.general.title' | t }}</h2>
+      <p>{{ 'cart.general.empty' | t }}</p>
+      <p>{{ 'cart.general.continue_browsing_html' | t }}</p>
+	</div>
+  {% else %}
+	<h2 class="theme">{{ 'cart.general.title' | t }}</h2>
+
+  	<!-- CURRENCY -->
+    {% if settings.show_multiple_currencies %}
+    	<p class="multi-currency-warning-bottom"><em>{{ 'cart.general.prices_displayed_in' | t }} <span class="selected-currency"></span>. {{ 'cart.general.checkout_price_in' | t: shop_currency: shop.currency }}</em></p>
+    {% endif %}
+
+	<form action="/cart" method="post" id="CartForm" class="just">
+      <section id="CartOuter">
+		<table>
+			<thead>
+				<tr class="top-row">
+					<th class="img">&nbsp;</th>
+					<th class="desc">{{ 'customer.order.details.product' | t }}</th>
+					<th>{{ 'customer.order.details.price' | t }}</th>
+					<th class="center">{{ 'customer.order.details.quantity' | t }}</th>
+					<th class="remove">&nbsp;</th>
+					<th class="total">{{ 'customer.order.details.total' | t }}</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for item in cart.items %}
+                  <tr class="item">
+					<td class="img center">
+          {% for property in item.properties %}
+                      {% unless property.last == blank or property.first == 'subscription_id' or property.first == 'shipping_interval_frequency' or property.first == 'shipping_interval_unit_type'%}
+
+            <p>{{ property.first }}: {{ property.last}}</p>
+                       {% endunless %} 
+          {% endfor %}
+                     
+						<a href="{{ item.url }}">
+                          <img src="{{ item | img_url: 'small' }}" alt="{{ item.title | escape }}" />
+                          <span class="mobile-small">{{ item.title }}</span>
+                        </a>
+					</td>
+					<td class="desc">
+                      	<a href="{{ item.url }}">{{ item.title }}</a>
+              		</td>
+					<td>{{ item.price | money }}</td>
+					<td class="center"> <input class="text quantity" type="text" size="4" id="updates_{{ item.id }}" name="updates[{{ item.id }}]" value="{{ item.quantity }}" class="replace" /> </td>
+					<td class="center remove">
+            {% comment %}<a href="/cart/change?id={{ item.id }}&quantity=0" class="remove-from-cart">{{ 'cart.general.remove' | t }}</a>{% endcomment %}
+            <a href="/cart/change?line={{ forloop.index }}&amp;quantity=0" class="remove-from-cart">{{ 'cart.general.remove' | t }}</a>
+          </td>
+					<td class="total">{{ item.line_price | money }}</td>
+                  </tr>
+                {% endfor %}
+			</tbody>
+			<tfoot>
+				<tr>
+                  <td colspan="4" class="img"><a id="ContinueShopping" href="/collections/all"><nobr>← {{ 'cart.general.continue_shopping' | t }}</nobr></a></td>
+                  
+					<td colspan="2" class="center update"><input type="submit" class="btn sml" name="update" value="{{ 'cart.general.update' | t }}" /></td>
+					
+				</tr>
+			</tfoot>
+		</table>
+      </section>
+      <div class="cart-info-container">
+        {% include 'handwritten-note' %}
+        
+          <h3><span>{{ 'cart.general.subtotal' | t }}:</span> {{ cart.total_price | money }}</h3>
+          <p><small>{{ 'cart.general.subtotal_note' | t }}</small></p>
+          <div class="cart-extra">
+<!--            <div><p class="cart-attribute__field">
+        <label for="additional-information-for-your-order"><strong>Additional information for your order<br/> (e.g., Delivery instructions)</strong></label>
+  <input id="additional-information-for-your-order" type="text" name="attributes[Add a handwritten note to your purchase! ]" value="{{ cart.attributes["Add a handwritten note to your purchase! "] }}">
+          </p></div> -->
+<!-- 		{% include 'storepickup' %} -->
+            
+          </div>
+
+          <div class="proceed">
+          	<input class="btn large-btn" type="submit" id="Checkout" name="checkout" value="{{ 'cart.general.checkout' | t }}" />
+          </div>
+          {% if additional_checkout_buttons %}
+<span class="additional-checkout-buttons">
+
+            <div class="additional">
+                <small class="additional-checkout">&mdash; or &mdash;</small>
+                {{ content_for_additional_checkout_buttons }}
+            </div>
+          
+</span>
+{% endif %}
+      </div>
+
+  </form>
+
+  {% endif %}
+</section>
