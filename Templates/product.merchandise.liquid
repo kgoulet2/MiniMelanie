@@ -1,0 +1,141 @@
+<nav class="breadcrumbs">
+  <div class="content-container">
+    <small>
+    <a href="{{ shop.url }}">{{ 'general.breadcrumbs.home' | t }}</a> &rsaquo; 
+    <a href="{{ shop.url }}/collections/all">{{ 'general.breadcrumbs.products' | t }}</a> &rsaquo; 
+    {% if collection %}<a href="{{ collection.url }}">{{ collection.title }}</a> &rsaquo;{% endif %}
+    {{ product.title }}
+    </small>
+  </div>
+</nav>
+
+{% assign featured_image = product.selected_or_first_available_variant.featured_image | default: product.featured_image %}
+<section class="product">  
+  <div class="content-container just">
+    <div id="ProductGallery" class="{% if settings.main_image_display == 'Zoom-in' %}zoom-in{% endif %}">
+      	<div id="ActiveWrapper" class="loading">
+          <ul id="ActiveWrapperUL" class="bx-slider">
+              {% for image in product.images %}
+              <li{% if featured_image == image %} class="active"{% endif %}>
+                <img src="{{ image | product_img_url: '1024x1024' }}" alt="{{ image.alt | escape }}" />
+              </li>
+              {% endfor %}
+          </ul>
+          {% if settings.main_image_display == 'Zoom-in' %}
+          <div class="zoom-message-outer">
+            <span class="zoom-message">{{ 'products.product.zoom' | t }}</span>
+          </div>
+          {% endif %}
+          {% if product.images.size > 1 %}
+          <span class="product-prev"></span>
+          <span class="product-next"></span>
+          {% endif %}
+        </div>
+        {% if product.images.size > 1 %}
+          <ul id="ProductThumbs">
+            {% for image in product.images %}
+                <li>
+                  <a data-slide-index="{{ forloop.index0 }}">
+                    <div class="table">
+                      <div class="img-outer">
+                        <img src="{{ image | product_img_url: 'compact' }}" alt="{{ image.alt | escape }}" />
+                      </div>
+                    </div>
+                  </a>
+                  <span class="spacer"></span>
+                </li>
+            {% endfor %}
+          </ul>
+      {% endif %}
+    </div>
+	<article itemscope itemtype="http://schema.org/Product">    
+      	<meta itemprop="url" content="{{ shop.url }}{{ product.url }}" />
+        <meta itemprop="image" content="{{ product.featured_image.src | product_img_url: 'grande' }}" />
+        {% include 'product-add-to-cart' %}
+		<section class="description">
+          {% if settings.show_product_tabs %}
+          	<nobr>
+              <ul id="DescTabs" class="tabs">
+                <li class="active" data-index="0">{{ settings.tab_1 }}</li>
+                {% comment %}{% if settings.show_tab_2 %}<li data-index="1">{{ settings.tab_2 }}</li>{% endif %}{% endcomment %}
+                {% if settings.show_tab_3 %}<li data-index="2">{{ settings.tab_3 }}</li>{% endif %}
+              </ul>
+            </nobr>
+          {% endif %}
+          	<div id="DescriptionContent" {% if settings.show_product_tabs %}class="tabbed"{% endif %}>
+              <div class="tab-content current" itemprop="description">
+                  <h4 class="mobile">{{ settings.tab_1 }}</h4>
+                  {{ product.description }}
+              </div>
+              
+              <div class="tab-content">
+                <h4 class="mobile">FAQ &amp; Shipping</h4>
+         
+				<ul>
+  				  <li>Orders are only shipped Monday through Wednesday, to avoid weekend overlays. We do not ship on Thursdays, Fridays, or holidays.</li>
+                  <li>Orders placed after 3:00 PM EST will be processed and shipped the following shipping day (Monday - Wednesday).</li>
+                  <li>Orders placed after 3:00 PM EST on Wednesday will ship on the following Monday.</li>
+                </ul>
+              </div>
+              
+              {% if settings.show_product_tabs %}
+               {% comment %} {% if settings.show_tab_2 %}
+              	<div class="tab-content">
+                  {% if settings.show_tab_2 %}<h4 class="mobile">{{ settings.tab_2 }}</h4>{% endif %}
+                  {{ pages[settings.tab_2_page].content }}
+                </div>
+              	{% endif %} {% endcomment %}
+                {% if settings.show_tab_3 %}
+              	<div class="tab-content">
+                  {% if settings.show_tab_3 %}<h4 class="mobile">{{ settings.tab_3 }}</h4>{% endif %}
+                  {{ pages[settings.tab_3_page].content }}
+                </div>
+              	{% endif %}
+              {% endif %}
+          	</div>
+
+          	<div class="hr"></div>
+          
+          	{% if settings.show_tags or settings.show_type or settings.show_vendor %}
+          	<div class="product-meta">
+              {% if product.tags.size > 0 %}
+                <span>{{ 'products.product.tags' | t }}:</span>
+                {% for tag in product.tags %}
+                    <a href="/collections/all/{{ tag | handle }}">{{ tag }}</a>{% unless forloop.last %}, {% endunless %}
+                {% endfor %}
+                <br/>
+              {% endif %}
+              {% if settings.show_type %}
+                  <span>{{ 'products.product.type' | t }}:</span> {{ product.type | link_to_type }} &nbsp; &nbsp; 
+                  <br/>
+              {% endif %}
+              {% if settings.show_vendor and product.vendor != '--' %}
+              <span>{{ 'products.product.vendor' | t }}:</span> <span itemprop="brand">{{ product.vendor | link_to_vendor }}</span>
+              {% endif %}
+            </div>
+            {% endif %}
+
+			{% include 'social-sharing' %}
+		</section>
+	</article>
+  </div>
+</section>
+
+{% if settings.show_recently_viewed %}
+  {% include 'products-recently-viewed' %}
+{% endif %}
+
+<div class="modal-overlay" id="AddModal">
+  <section class="quick-modal">
+    <div class="table-cell">
+      <div class="product">
+          <p class="center">{{ 'products.product.added' | t: product: product.title }}</p>
+          <div class="center buttons">
+            <a class="btn close" href="javascript:void(0)">{{ 'cart.general.continue_shopping' | t }}</a> <a class="btn" href="/cart">{{ 'cart.general.title' | t }}</a>
+          </div>
+          <section class="related"></section>
+          <span class="close"></span>
+      </div>
+    </div>
+  </section>
+</div>
