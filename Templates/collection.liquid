@@ -1,0 +1,59 @@
+{% paginate collection.products by 24 %}
+
+<section class="{{ collection.handle }}">
+	{% if settings.collection_tags and collection.tags.size > 0 %}
+  	<nav class="filter-tag">
+      <span class="mobile">{% unless current_tags %}{{ 'collections.sorting.title' | t }}{% endunless %}
+      		{% for tag in collection.all_tags %}
+              {% if current_tags contains tag %}
+                {{ tag | capitalize }}
+              {% endif %}
+            {% endfor %}
+      	</span>
+		<ul>
+			<li{% unless current_tags %} class="active"{% endunless %}>
+				{% if collection.handle %} <a href="/collections/{{ collection.handle }}">All</a>{% elsif collection.products.first.type == collection.title %}<a href="{{ collection.title | url_for_type }}">All</a>{% elsif collection.products.first.vendor == collection.title %} <a href="{{ collection.title | url_for_vendor }}">All</a>{% endif %}
+			</li>
+			{% for tag in collection.all_tags %}{% if current_tags contains tag %}<li class="active">
+				{{ tag | link_to_remove_tag: tag }}
+			</li>{% else %}<li>
+				{{ tag | link_to_tag: tag }}
+			</li>{% endif %}{% endfor %}
+		</ul>
+	</nav>
+    {% endif %}
+
+  	{% if collection.image %}
+      <section class="collection-top">
+          <h2><span>{% if collection.handle != 'all' %}{{ collection.title }}{% else %}{{ 'general.breadcrumbs.products' | t }}{% endif %}</span></h2>
+      	  <div class="banner-box"><img src="{{ collection.image.src | collection_img_url: '2048x2048' }}" alt="{{ collection.image.alt | escape }}" /></div>
+      </section>
+    {% endif %}
+
+	{% if settings.collection_description and collection.description != ''%}
+  		<span class="collection-description">{{ collection.description }}</span>
+  	{% endif %}
+	{% if collection.products.size > 0 %}
+      <ul class="product-grid just">
+		{% for product in collection.products %}
+  			<li>{% include 'product-grid-item' %}</li>
+  		{% endfor %}
+      </ul>
+	{% else %}
+  	<p><strong><br/>{{ 'collections.general.no_matches' | t }}</strong></p>
+  	{% endif %}
+</section>
+
+{% include 'pagination' %}
+
+{% if collection.products.size > 0 and settings.quick_view %}
+  {% for product in collection.products %}
+	<div class="modal-overlay" id="Product{{ forloop.index0 }}">
+      <section class="quick-modal">
+       {% include 'product-quick-view' %}
+      </section>
+	</div>
+  {% endfor %}
+{% endif %}
+
+{% endpaginate %}
