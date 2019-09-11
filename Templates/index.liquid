@@ -1,0 +1,146 @@
+<section id="Hero">
+  {% if settings.hero_type == 'carousel' %}
+      {% include 'index-carousel' %}
+  {% elsif settings.hero_type == 'image' %}
+      <div class="active">
+        <a class="hero hero-full" {% if settings.index_hero_link != '' %} href="{{ settings.index_hero_link }}"{% endif %}>
+          <img src="{{ settings.index_hero_img | asset_url }}" alt="">
+          {% if settings.index_hero_text != '' or settings.index_hero_caption != '' %}
+          <div class="slide-pos">
+            <div class="slide-details">
+              {% if settings.index_hero_text != '' %}<h3>{{ settings.index_hero_text }}</h3>{% endif %}
+              {% if settings.index_hero_caption != '' %}<p>{{ settings.index_hero_caption }}</p>{% endif %}
+            </div>
+          </div>
+          {% endif %}
+        </a>
+      </div>
+  {% elsif settings.hero_type == 'video' %}
+    <div id="HeroVideo">
+      {{ settings.index_video }}
+    </div>
+  {% endif %}
+</section>
+
+
+<section class="brand-intro">
+  <p><b>Desserts by Food Network’s Chopped Champion, Melanie Moss</b>.<br>We’re known for our custom Chocolate Cake Truffles for gifting and events, beautiful Birthday Cakes and Wedding Cakes, and creative Mini Sweets.</p>
+</section>
+
+{% if settings.show_frontpage_collection and collections.frontpage.products.size > 0 %}
+  <section class="hero-bottom">
+    {% if frontpage_collection_title != '' %}
+      <h2 class="theme coll-heading">{{ settings.frontpage_collection_title }}</h2>
+    {% endif %}
+    <ul class="product-grid just" id="FrontpageColl">
+      {% for product in collections.frontpage.products limit:4 %}
+          <li>{% include 'product-grid-item' %}</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  {% if settings.quick_view %}
+    {% for product in collections.frontpage.products %}
+      <div class="modal-overlay" id="Product{{ forloop.index0 }}">
+        <section class="quick-modal">
+            {% include 'product-quick-view' %}
+        </section>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endif %}
+
+
+<section class="home-gift-block"> 
+	<h2>Find the Perfect Gift</h2>
+  
+  <div class="one-fourth-column">
+    <a href="/products/all-chocolate-everything">
+      <img src="{{ 'all-choc-everything.png' | asset_img_url: '900x' }}" />
+    </a>
+  		<h4><a href="/products/all-chocolate-everything">All Chocolate Everything</a></h4>
+	  <a class="btn" href="https://minimelanie.com/cart/28421117831:1">Add to Cart</a>
+  </div>
+  
+  <div class="one-fourth-column">
+    <a href="/products/gluten-free-goodness">
+      <img src="{{ 'gf-goodness.png' | asset_img_url: '900x' }}" />
+    </a>
+  		<h4><a href="/products/gluten-free-goodness">Gluten Free Goodness</a></h4>
+	  <a class="btn" href="https://minimelanie.com/cart/28421515655:1">Add to Cart</a>
+  </div>
+  
+  <div class="one-fourth-column">
+    <a href="/products/assorted">
+      <img src="{{ 'think-outside-the-box.png' | asset_img_url: '900x' }}" />
+    </a>
+  		<h4><a href="/products/assorted">Think Outside the Box</a></h4>
+	  <a class="btn" href="http://minimelanie.com/cart/28421210503:1">Add to Cart</a>
+  </div>
+  
+  <div class="one-fourth-column">
+    <a href="/products/let-them-eat-cake">
+      <img src="{{ 'let-them-eat-cake.png' | asset_img_url: '900x' }}" />
+    </a>
+  		<h4><a href="/products/let-them-eat-cake">Let Them Eat Cake</a></h4>
+	  <a class="btn" href="http://minimelanie.com/cart/28421599751:1">Add to Cart</a>
+  </div>
+</section>
+
+<section class="as-seen-in"> 
+	<h2>As Seen In</h2>
+  
+    <a href="https://www.minimelanie.com/blogs/news">
+    <img src="https://cdn.shopify.com/s/files/1/1418/7404/files/asseenin-michelin.jpg?17268562618111609375">
+    </a>
+  
+    <a href="https://www.minimelanie.com/blogs/news">
+    <img src="https://cdn.shopify.com/s/files/1/1418/7404/files/asseenin-eater.jpg?17268562618111609375">
+    </a>
+    
+ 	<a href="https://www.minimelanie.com/blogs/news">
+    <img src="https://cdn.shopify.com/s/files/1/1418/7404/files/asseenin-buzzfeed.jpg?17268562618111609375">
+    </a>
+  
+    <a href="https://www.minimelanie.com/blogs/news">
+   	<img src="https://cdn.shopify.com/s/files/1/1418/7404/files/asseenin-forbes.jpg?17268562618111609375">
+    </a>
+  
+  	<a href="https://www.minimelanie.com/blogs/news">
+    <img src="https://cdn.shopify.com/s/files/1/1418/7404/files/asseenin-cosmo.jpg?17268562618111609375">
+    </a>
+  
+    
+ 	<a href="https://www.minimelanie.com/blogs/news">
+    <img src="https://cdn.shopify.com/s/files/1/1418/7404/files/asseenin-tastingtable.jpg?17268562618111609375">
+    </a>  
+  
+  	<a href="https://www.minimelanie.com/blogs/news">
+    <img src="https://cdn.shopify.com/s/files/1/1418/7404/files/asseenin-today.jpg?17268562618111609375">
+    </a>
+  
+ 	<a href="https://www.minimelanie.com/blogs/news">
+    <img src="https://cdn.shopify.com/s/files/1/1418/7404/files/asseenin-refinery29.jpg?17268562618111609375">
+    </a>
+  
+</section>
+
+
+
+{% if settings.show_promo_modal %}
+  <div class="modal-overlay" id="PromoModal">
+    <section class="quick-modal">
+      <div class="table-cell">
+        <div class="product">
+          <h3 class="theme">{{ settings.promo_modal_title }}</h3>
+          <p>{{ settings.promo_modal_text }}</p>
+          <span class="close"></span>
+        </div>
+      </div>
+    </section>
+  </div>
+{% endif %}
+
+{% if settings.quick_view %}
+{{ 'option_selection.js' | shopify_asset_url | script_tag }}
+{% endif %}
