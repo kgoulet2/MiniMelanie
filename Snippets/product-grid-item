@@ -1,0 +1,38 @@
+<a id="product-{{ product.variants.first.id }}" class="product-link" href="{{ product.url | within: collection }}">
+  <div class="img-outer"{% if settings.collection_style == 'full' %} style="background-image:url({{ product.featured_image | product_img_url: 'large' }});"{% endif %}> 
+      <div class="table">
+        <div class="table-cell">
+          <div class="max-width">
+          	<img src="{{ product.featured_image | product_img_url: 'large' }}" class="orig" alt="{{ product.featured_image.alt | escape }}" onload="imgLoaded(this)"/>
+          </div>
+        </div>
+      </div>
+      {% if product.compare_at_price > product.price %}
+        <span class="sale-box">{{ 'products.product.on_sale' | t }}</span>
+      {% endif %}
+      {% if settings.quick_view %}
+      <div class="slideup">
+          <span data-modal="Product{{ forloop.index0 }}" class="trigger-quick-view">+ {{ 'products.general.quick_view' | t }}</span>
+	  </div>   
+      {% endif %}
+  </div>
+  <div class="product-information">
+      <span class="title">{{ product.title }}</span>
+      <span class="price{% if product.compare_at_price > product.price %} sale{% endif %}">
+        <nobr>
+        {% if product.available %}
+        	{% if product.compare_at_price > product.price %}
+        		<span class="old-price">{{ product.compare_at_price | money }}</span>
+        	{% endif %}
+        	{% if product.price_varies %}
+        		<small>{{ 'products.general.from' | t }}</small> {{ product.price_min | money }}
+        	{% else %}
+        {{ product.price_min | money }}
+        	{% endif %}
+        {% else %}
+        	<span class="sold-out">{{ 'products.product.sold_out' | t }}</span>
+        {% endif %}
+        </nobr>
+      </span>
+  </div>
+</a>
