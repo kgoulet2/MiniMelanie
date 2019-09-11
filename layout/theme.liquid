@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>  <html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7]>     <html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8]>     <html class="ie ie8" lang="en"> <![endif]-->
+<!--[if IE 9]>     <html class="ie ie9" lang="en"> <![endif]-->
+<!--[if gt IE 9]>  <html class="ie" lang="en"> <![endif]-->
+<!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% assign maxmeta = 155 %}{% if template contains 'product' %}<meta name="description" content="{{ product.description | strip_html | strip_newlines | truncate: maxmeta | escape }}" />{% elsif template contains 'page'%}{% if page_description %}<meta name="description" content="{{ page_description }}" />{% else %}<meta name="description" content="{{ page.content | strip_html | strip_newlines | truncate: maxmeta | escape }}" />{% endif %}{% else %}<meta name="description" content="{{ shop.description }}" />{% endif %}
+{% include 'head-fb-open-graph' %}
+
+{% if template == 'index' %}<title>{{ shop.name }}</title>{% elsif template == '404' %}<title>Page Not Found | {{ shop.name }}</title>{% else %}<title>{{ page_title }} | {{ shop.name }}</title>{% endif %}
+
+<link rel="canonical" href="{{ canonical_url }}" />
+{% if settings.use_favicon %}<link rel="shortcut icon" href="{{ 'favicon.png' | asset_url }}"/>{% else %}<link rel="shortcut icon" href="{{ 'blank.png' | asset_url }}"/>{% endif %}
+
+{% if settings.general_font != '' or settings.header_font != '' or settings.secondary_font != '' %}<link href='//fonts.googleapis.com/css?family={% if settings.general_font != '' %}{{ settings.general_font }}:400,500,700|{% endif %}{% if settings.header_font != '' %}{{ settings.header_font }}:400,500,600,700{% endif %}{% if settings.secondary_font %}|{{ settings.secondary_font }}:400,500,700{% endif %}' rel='stylesheet' type='text/css'>{% endif %}
+{{ 'reset.css' | asset_url | stylesheet_tag }}
+{{ 'style.css' | asset_url | stylesheet_tag }}
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet"/>
+
+{{ 'modernizr.js' | asset_url | script_tag }}
+{{ '//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js' | script_tag }}{% if template contains 'customers' %}{{ 'shopify_common.js' | shopify_asset_url | script_tag }}
+{{ 'customer_area.js'  | shopify_asset_url | script_tag }}{% endif %}
+{{ 'jquery.cookie.min.js' | asset_url | script_tag }}
+{{ 'jquery.flexslider-min.js' | asset_url | script_tag }}
+{{ 'testimonials.js' | asset_url | script_tag }}
+
+<!--[if lt IE 9]>
+<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+{% include 'head-script-imgload' %}
+
+{{ content_for_header }}
+
+  <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet">
+
+</head>
+<body class="{% if customer %}customer-logged-in {% endif %}template-{{ template | replace: '/', '-' | split: '.' }}">
+  <div class="container" id="SiteContainer">
+    <header id="Header">
+          <!-- PROMO -->
+          {% if settings.show_promo_banner %}
+            <aside class="promo">
+              <strong>{{ settings.promo_modal_title }}</strong> {{ settings.promo_modal_text }}
+            </aside>
+          {% endif %}
+      
+            <div class="wrap">
+                <form class="search" method="get" action="/search">
+                    <input type="hidden" name="type" value="product"/>
+                    <input type="text" name="q" value="{% if search.performed %}{{ search.terms | escape | downcase }}{% endif %}" placeholder="{{ 'general.search.placeholder' | t }}" class="search-query"/>
+                    <span class="remove-search"></span>
+                </form>
+                <!-- SEARCH, CURRENCY, ACCOUNT, CART -->
+        <aside id="TopBar">
+          
+          <div class="info-box">
+          	{% if settings.phone_display %}
+            <a class="header-phone" href="/pages/contact"><strong>NEED HELP?</strong> CONTACT US</a>
+          		<a class="header-phone" href="tel:6466814747">CALL US: (646) 681-4747</a>
+          		<a class="header-phone" href="mailto:info@minimelanie.com">EMAIL US: INFO@MINIMELANIE.COM</a>            
+          	{% endif %}
+          </div>
+          
+          {% if settings.search_display %}
+          <a href="javascript:void(0)" id="SearchToggle" class="so"><span class="desktop so">{{ 'general.search.placeholder' | t }}</span> <span class="search-toggle so"><i class="fa fa-search so"></i></span></a>
+		  {% endif %}
+          
+          {% if shop.customer_accounts_enabled %}
+            <span class="desktop">
+            {% if customer %}
+              <span class="welcome">
+               <a href="/account">{{ 'layout.customer.logged_in_as' | t }} {{ customer.first_name }}</a>
+              </span>
+              {{ 'layout.customer.log_out' | t | customer_logout_link }}
+            {% else %}
+              {{ 'layout.customer.log_in' | t | customer_login_link }}
+              {{ 'layout.customer.create_account' | t | customer_register_link }}
+            {% endif %}
+            </span>
+          {% endif %}
+
+          <!-- <a href="javascript:void(0)" class="mobile toggle-menus"><i class="fa fa-bars"></i></a> -->
+
+          <a href="/cart/" id="CartButton">
+            <i class="fa fa-shopping-cart"></i> {{ 'cart.general.title' | t }} (<span class="cart-count">{{ cart.item_count }}</span>)
+          <a href="javascript:void(0)" class="mobile toggle-menus"><i class="fa fa-bars"></i></a>
+
+          </a>
+        </aside>
+
+                <!-- LOGO -->
+                <h1><a href="/" id="Logo"><div class="table-cell">{% if settings.logo_image == 'image' %}<img src="{{ 'logo.png' | asset_url }}" alt="{{ shop.name | escape }}" />{% else %}{{ shop.name | escape }}{% endif %}</div></a></h1>
+      </div>
+
+            <!-- MAIN NAV -->
+            <section id="NavMenus">
+              <nav>
+                  <ul id="MainNav">
+                    {% for link in linklists.main-menu.links %}
+                        {% assign has_sub_menu = false %}
+                        {% assign parent_link_active = false %}
+                        {% assign child_list_handle = link.title | handle %}
+
+                        {% if linklists[child_list_handle] and linklists[child_list_handle].links.size > 0 %}
+                          {% assign has_sub_menu = true %}
+                          {% for child_link in linklists[child_list_handle].links %}
+                            {% if page_title == child_link.title %}
+                              {% assign parent_link_active = true %}
+                            {% endif %}
+                          {% endfor %}
+                        {% endif %}
+
+                    <li class="{% if has_sub_menu == true %}has-sub-nav{% endif %} {% if link.active or parent_link_active %}active{% endif %}">
+                            <a href="{{ link.url }}">{{ link.title | escape }}</a>
+                            {% if parent_link_active or link.active %}{% capture list_handle %}{{ link.title | handle }}{% endcapture %}{% endif %}
+                            <!-- MOBILE SUBNAVS -->
+                            {% if linklists[child_list_handle].links.size > 0 %}
+                                <ul class="mobile submenu">
+                                    <li class="back"><a href="javascript:void(0)"><i class="fa fa-angle-left"></i> {{ 'general.breadcrumbs.go_back' | t }}</a></li>
+                                    {% for sublink in linklists[child_list_handle].links %}
+                                      <li{% if sublink.active %} class="active"{% endif %}><a href="{{ sublink.url }}"{% if sublink.active %} class="active"{% endif %}>{{ sublink.title }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+
+                    {% if shop.customer_accounts_enabled %}
+                      {% if customer %}
+                        <li class="mobile"><a href="/account">{{ 'customer.account.title' | t }}</a></li>
+                        <li class="mobile">{{ 'layout.customer.log_out' | t | customer_logout_link }}</li>
+                      {% else %}
+                        <li class="mobile">{{ 'layout.customer.log_in' | t | customer_login_link }}</li>
+                      {% endif %}
+                    {% endif %}
+                  </ul>
+              </nav>
+
+              {% if settings.navigation_style == 'static' %}
+                <!-- DESKTOP SUBNAVS -->
+                {% if linklists[list_handle].links.size > 0 %}
+                  <nav class="desktop">
+                    <ul class="submenu">
+                        {% for sublink in linklists[list_handle].links %}
+                          <li{% if sublink.active %} class="active"{% endif %}><a href="{{ sublink.url }}"{% if sublink.active %} class="active"{% endif %}>{{ sublink.title }}</a></li>
+                        {% endfor %}
+                    </ul>
+                  </nav>
+                {% endif %}
+              {% endif %}
+          </section>
+      </header>
+
+      <!-- CONTENT -->
+      <div class="content-wrapper">
+      {% if template == 'list-collections' %}
+          {% include 'collection-listing' %}
+      {% else %}
+          {{ content_for_layout }}
+      {% endif %}
+      </div>
+  </div>
+
+
+  <div id="Footer">
+    <footer>
+        <div class="footer-inner just">
+            <nav class="footer-text">
+              <a href="/"><img class="footer-logo" src="https://cdn.shopify.com/s/files/1/1418/7404/files/MM-LogoMark-White.png?16375582740304615818" alt="{{ shop.name | escape }}" /></a>
+
+              <div style="float: left;width: 50%;">
+                <h5 style="font-size: 17px; line-height: 24px;">Corporate Gifts, Catering, Custom Cakes.
+                  <p style="font-size: 17px;"> Included in the 2016 New York City Michelin Guide.</p>
+                <!--                <nav class="social">
+                  <h5>{{ 'layout.footer.social_title' | t }}</h5>
+                  <ul class="clearfix">
+                      {% if settings.instagram_link != '' %}<li><a href="{{ settings.instagram_link }}" title="{{ shop.name }} on Instagram" target="_blank"><i class="fa fa-instagram"></i></a></li>{% endif %}
+					  {% if settings.twitter_link != '' %}<li><a href="{{ settings.twitter_link }}" title="{{ shop.name }} on Twitter" target="_blank"><i class="fa fa-twitter"></i></a></li>{% endif %}
+                      {% if settings.facebook_link != '' %}<li><a href="{{ settings.facebook_link }}" title="{{ shop.name }} on Facebook" target="_blank"><i class="fa fa-facebook"></i></a></li>{% endif %}
+                      {% if settings.youtube_link != '' %}<li><a href="{{ settings.youtube_link }}" title="{{ shop.name }} on YouTube" target="_blank"><i class="fa fa-youtube"></i></a></li>{% endif %}
+                      {% if settings.pinterest_link != '' %}<li><a href="{{ settings.pinterest_link }}" title="{{ shop.name }} on Pinterest" target="_blank"><i class="fa fa-pinterest"></i></a></li>{% endif %}
+                      {% if settings.vimeo_link != '' %}<li><a href="{{ settings.vimeo_link }}" title="{{ shop.name }} on Vimeo" target="_blank"><i class="fa fa-vimeo-square"></i></a></li>{% endif %}
+                      {% if settings.tumblr_link != '' %}<li><a href="{{ settings.tumblr_link }}" title="{{ shop.name }} on Tumblr" target="_blank"><i class="fa fa-tumblr"></i></a></li>{% endif %}
+                      {% if settings.google_link != '' %}<li><a href="{{ settings.google_link }}" title="{{ shop.name }} on Google+" target="_blank"><i class="fa fa-google-plus"></i></a></li>{% endif %}
+                      {% if settings.atom_link != '' %}<li><a href="{{ settings.atom_link }}" title="{{ shop.name }} Feed" target="_blank"><i class="fa fa-rss"></i></a></li>{% endif %}
+                  </ul>
+                </nav> -->
+
+                </h5></div>
+            </nav>
+            <nav class="linklist">
+<!--                 <h5>{{ linklists[settings.footer_linklist].title }}</h5> -->
+                <ul>
+                    {% for link in linklists[settings.footer_linklist].links %}<li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>{% endfor %}
+                </ul>
+            </nav>
+
+
+
+              {% if settings.allow_newsletter %}
+            <nav class="newsletter">
+<!--                 <h5>{{ 'layout.footer.newsletter_title' | t }}</h5> -->
+	            <p style="font-size: 18px;">Join our mailing list to learn about exclusive offers and sweet surprises!</p>
+                <div class="newsletter-signup">
+                    <div id="mc_embed_signup">
+                      <form action="{{ settings.mailchimp_code }}" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+                          <div class="mc-field-group">
+                              <input type="email" value="" name="EMAIL" class="required email email_update" id="mce-EMAIL" placeholder="{{ 'general.newsletter_form.newsletter_email' | t }}">
+                              <input type="submit" value="{{ 'general.newsletter_form.submit' | t }}" name="subscribe" id="mc-embedded-subscribe" class="btn">
+                          </div>
+                          <div id="mce-responses" class="clear">
+                              <div class="response" id="mce-error-response" style="display:none"></div>
+                              <div class="response" id="mce-success-response" style="display:none"></div>
+                          </div>
+                      </form>
+                    </div>
+                    {% include 'footer-mailchimp' %}
+           		</div>
+
+
+              <br><br>
+
+              {{ 'social/social-icons.css' | global_asset_url | stylesheet_tag }}
+<style>
+  .social-links a { display: -moz-inline-stack; display: inline-block; zoom: 1; *display: inline; margin: 0; padding: 0.03em; color: #fff!important; font-size: 33px!important; }
+</style>
+<span class="social-links">
+  <a href="https://www.instagram.com/minimelanienyc/" title="Follow us on Instagram" target="_blank"><span class="shopify-social-icon-instagram"></span></a>
+  <a href="https://www.facebook.com/minimelanienyc/" title="Follow us on Facebook" target="_blank"><span class="shopify-social-icon-facebook"></span></a>
+  <a href="https://twitter.com/minimelanienyc" title="Follow us on Twitter" target="_blank"><span class="shopify-social-icon-twitter"></span></a>
+  <a href="https://www.pinterest.com/minimelanienyc/" title="Follow us on Pinterest" target="_blank"><span class="shopify-social-icon-pinterest"></span></a>
+</span>
+
+
+            </nav>
+
+
+
+            {% endif %}
+              </div>
+    </footer>
+        <footer class="footer-bottom">
+          <div class="just">
+        <p class="ib">&copy; {{ 'now' | date: '%Y' }} <a href="/">{{ shop.name }}</a> . Site by <a href="http://www.solmarkcreative.com" target="_blank">Solmark Creative</a></p>
+<!--                 <aside class="payment">
+                  {% for type in shop.enabled_payment_types %}
+                    <img src="{{ type | payment_type_img_url }}" />
+                  {% endfor %}
+                </aside> -->
+          </div>
+           <!-- CURRENCY -->
+            {% if settings.show_multiple_currencies %}
+<!--                 {% include 'currencies-list' %} -->
+            {% endif %}
+
+      </footer>
+    </div>
+    {% if settings.body_bg_img and settings.body_bg_alignment == 'cover' %}
+      <aside id="IE8bg">
+        <img src="{{ 'background-user-uploaded.jpg' | asset_url }}" alt=""/>
+      </aside>
+    {% endif %}
+
+{% if template contains 'product' or template contains 'index' %}{{ 'jquery.bxslider.min.js' | asset_url | script_tag }}{% endif %}
+{% if settings.show_recently_viewed %}
+  <script type="text/javascript" charset="utf-8">
+  //<![CDATA[
+      // Including api.jquery.js conditionally.
+      if (typeof Shopify.resizeImage === 'undefined') {
+          document.write({{ "api.jquery.js" | shopify_asset_url | script_tag | json }});
+      }
+  //]]>
+  </script>
+  {{ '//ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js' | script_tag }}
+  {{ 'jquery.products.min.js' | asset_url | script_tag }}{% if template contains 'product' %}{{ 'jquery.owl.carousel.min.js' | asset_url | script_tag }}{% endif %}
+{% endif %}
+<script type="text/javascript" charset="utf-8">
+//<![CDATA[
+{% if settings.show_recently_viewed and template contains 'product' %}Shopify.Products.recordRecentlyViewed();{% endif %} Shopify.money_format = "{{ shop.money_format }}";
+
+// custom selectCallback function (window.selectCallback -- needs to be accessible from many other places!)
+var selectCallback = function(variant, selector) {
+  $product = $('form#product-form-' + selector.product.id);
+  if (variant && variant.available == true) {
+    if(variant.price < variant.compare_at_price) {
+      $('.old-price', $product).html(Shopify.formatMoney(variant.compare_at_price, "{{ shop.money_format }}"))
+    } else {
+      $('.old-price', $product).text('')
+    }
+    $('.price', $product).html(Shopify.formatMoney(variant.price, "{{ shop.money_format }}"));
+    $('.add', $product).removeClass('disabled').removeAttr('disabled').val({{ 'products.product.add_to_cart' | t | json }});
+
+    /* CURRENCY */
+    {% if settings.show_multiple_currencies %}
+    Currency.convertAll('{{ shop.currency }}', jQuery('#currencies span.selected').attr('data-currency'), 'span.money', '{{ settings.currency_format }}');
+    {% endif %}
+  } else {
+    var message = variant ? {{ 'products.product.sold_out' | t | json }} : {{ 'products.product.sold_out' | t | json }};
+    $('.old-price', $product).text('')
+    $('.price', $product).text(message);
+    $('.add', $product).addClass('disabled').attr('disabled', 'disabled').val(message);
+  }
+
+  /* VARIANT IMAGES */
+  if (variant && variant.featured_image) {
+    if (slider.length) {
+      // product page
+      var varImg = variant.featured_image.src,
+        strArr = varImg.split('/products/'),
+        imageArr = strArr[1].split("."),
+        imageName = imageArr[0];
+
+      // HACK TO RETRIEVE IMAGE INDEX, BECAUSE variant.featured_image.position IS WRONG
+      for (var i = 0; i < selector.product.images.length; i++) {
+        var thisImg = selector.product.images[i],
+          thisStrArr = thisImg.split('/products/'),
+          thisImgArr = thisStrArr[1].split("."),
+          thisImgName = thisImgArr[0];
+        if(imageName.indexOf(thisImgName) !== -1) {
+          pos = i;
+          slider.goToSlide(pos);
+        }
+      }
+    } else {
+      // quick view
+      var original_image = $product.closest('.product').find('.img-outer').find('img'), new_image = variant.featured_image;
+      original_image.each(function() {
+        Shopify.Image.switchImage(new_image, $(this)[0], function (new_image_src, original_image, element) {
+          $(element).attr('src', new_image_src);
+        });
+      });
+    }
+  }
+}
+
+//]]>
+</script>
+{% if settings.show_multiple_currencies %}{% include 'currencies-script' %}{% endif %}
+{{ 'option_selection.js' | shopify_asset_url | script_tag }}
+{{ 'https://s3.amazonaws.com/downloads.mailchimp.com/js/jquery.form-n-validate.js' | script_tag }}
+{{ 'init.js' | asset_url | script_tag }}
+
+{% include 'ajaxify-cart' %}
+
+     <!--
+*** Weekend Theme, v1.5.1
+*** Last Update: 3/18/15
+-->
+
+{% include 'subscription-theme-footer' %}
+</body>
+</html>
