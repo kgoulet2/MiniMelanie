@@ -1,0 +1,31 @@
+{% form 'contact' %}
+  {% if form.posted_successfully? %}
+    <p>{{ 'contact.post_success' | t }}</p>
+  {% endif %}
+  
+  {% if form.errors %}
+  	<p class="error">{{ 'general.forms.post_error' | t }}</p>
+  {% endif %}
+
+<p>{{ 'products.product.ask_title' | t }}</p>
+<br/>
+
+  <div class="form-field">
+    <label for="contact_form_name">{{ 'contact.form.name' | t }}</label>
+    <input type="text" id="contact_form_name" class="contact_input" name="contact[name]" value="{{ form.name }}" />
+  </div>
+  <div class="form-field">
+    <label for="contact_form_email">{{ 'contact.form.email' | t }}</label>
+    <input type="text" id="contact_form_email" class="contact_input" name="contact[email]" value="{{ form.email }}"/>
+  </div>
+  <input type="hidden" id="contact_form_subject" name="contact[subject]" value="{{ product.title }}"/>
+  <div class="form-field message">
+  	<label for="contact_message">{{ 'contact.form.message' | t }}</label>
+  	<textarea id="contact_message" name="contact[body]" rows="5">{{ form.body }}</textarea>
+  </div>
+  <div class="form-field">
+	<input type="submit" class="btn submit" value="{{ 'contact.form.send' | t }}"/>
+  </div>
+{% endform %}
+
+<p class="message"></p>
